@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      const App = () => {
+        const [tasks, setTasks] = useState([]); // Инициализируем пустым массивом
+        const [newTask, setNewTask] = useState("");
+
+        // Загрузка задач из файла
+        const loadTasks = (e) => {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const loadedTasks = JSON.parse(event.target.result);
+              if (Array.isArray(loadedTasks)) {
+                setTasks(loadedTasks);
+              } else {
+                alert("Формат данных некорректный.");
+              }
+            } catch (error) {
+              alert("Ошибка при чтении файла. Проверьте формат.");
+            }
+          };
+          reader.readAsText(file);
+        };
+
+        // Сохранение задач в файл
+        const saveTasks = () => {
+          const formattedTasks = tasks.map((task, index) => ({
+            id: index + 1,
+            content: task.content,
+          }));
+          const blob = new Blob([JSON.stringify(formattedTasks, null, 2)], {
+            type: "application/json",
+          });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "tasks.json";
+          link.click();
+        };
+
+        // Добавление задачи
+        const addTask = () => {
+          if (newTask.trim() === "") return; // Проверяем, чтобы задача не была пустой
+          const task = { id: tasks.length + 1, content: newTask }; // Создаем новую задачу
+          setTasks([...tasks, task]); // Добавляем новую задачу в массив
+          setNewTask(""); // Очищаем поле ввода
+        };
+
+        // Удаление задачи
+        const removeTask = (id) => {
+          setTasks(tasks.filter((task) => task.id !== id));
+        };
+
+        return (
+          <div>
+            <h1>Lista zadań</h1>
+            <input type="file" accept="application/json" onChange={loadTasks} />
+            <div>
+              <input
+                type="text"
+                placeholder="Nowe zadanie"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)} // Обновляем состояние на ввод текста
+              />
+              <button onClick={addTask}>Dodaj zadanie</button>
+            </div>
+            <div>
+              <h3>
+                Zadania do zrobienia: <span>{tasks.length}</span>
+              </h3>
+              {tasks.map((task) => (
+                <div key={task.id} className="task">
+                  <span>{task.content}</span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeTask(task.id)}
+                  >
+                    x
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button onClick={saveTasks}>Zapisz wszystkie zadania</button>
+          </div>
+        );
+      };
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class Square extends React.Component {
+        static defaultProps = {
+          color: "#ccc",
+        };
+
+        render() {
+          const squareStyle = {
+            height: 200,
+            width: 200,
+            backgroundColor: this.props.color,
+          };
+          return <div style={squareStyle}></div>;
+        }
+      }
+
+      class Label extends React.Component {
+        static defaultProps = {
+          color: "No color provided",
+        };
+
+        render() {
+          const labelStyle = {
+            padding: 10,
+            color: "#000",
+            fontWeight: "bold",
+          };
+
+          return <p style={labelStyle}>{this.props.color}</p>;
+        }
+      }
+
+      class Card extends React.Component {
+        static defaultProps = {
+          color: "#fff",
+        };
+
+        render() {
+          const cardStyle = {
+            height: 300,
+            width: 200,
+            padding: 0,
+            backgroundColor: "#fff",
+            boxShadow: "0px 0px 4px #999",
+          };
+
+          return (
+            <div style={cardStyle}>
+              <Square color={this.props.color} />
+              <Label color={this.props.color} />
+            </div>
+          );
+        }
+      }
+
+      function MyApp() {
+        return (
+          <div>
+            <Card color="#4a6c90" />
+            <Card color="#fa46b8" />
+            <Card color="#12af97" />
+            <Card color="#73ab1f" />
+            <Card color="#af19c5" />
+          </div>
+        );
+      }
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<MyApp />);
+    </script>
+  </body>
+</html>
